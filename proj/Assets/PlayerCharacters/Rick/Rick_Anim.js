@@ -1,8 +1,5 @@
 #pragma strict
 
-private var loopAnim = 'idle';  // idle or walk
-private var pauseLoopAnim = false;
-
 private var idleOffsets = [ 
   new Vector2(0, .6666666)
 ];
@@ -24,68 +21,49 @@ private var attackOffsets = [
   Vector2(.250, 0) 
 ];
 
-function Awake () { 
-  StartCoroutine(IdleAnim());
+private var loopAnimOffsets : Vector2[] = idleOffsets;  // idleOffsets or walkOffsets
+private var loopAnimIndex = 0;
+
+private var nonLoopAnimOffsets : Vector2[] = null;  // attackOffsets
+private var nonLoopAnimIndex = 0;
+
+function Awake() { 
+  StartCoroutine(Anim());
 }
 
 function idle() {
-  if (loopAnim !== 'idle') StartCoroutine(IdleAnim());
+  if (loopAnimOffsets !== idleOffsets) {
+    loopAnimOffsets = idleOffsets;
+    loopAnimIndex = 0;
+  }
 }
 
 function walk() {
-  if (loopAnim !== 'walk') StartCoroutine(WalkAnim());
+  if (loopAnimOffsets !== walkOffsets) {
+    loopAnimOffsets = walkOffsets;
+    loopAnimIndex = 0;
+  }
 }
 
 function attack() {
-  if (!pauseLoopAnim) StartCoroutine(AttackAnim());
+  if (nonLoopAnimOffsets === null) nonLoopAnimOffsets = attackOffsets;
 }
 
-/*
-// TODO: move the following update function into character controller.
-function Update () {
-  if (Input.GetButton ("Fire1")) {
-    attack();
-  } else if (Input.GetAxis ("Horizontal") > 0.001) {
-    walk();
-  } else {
-    idle();
-  }
-}
-*/
-
-private function IdleAnim() {
-  StopCoroutine(loopAnim);
-  loopAnim = 'idle';
-  var i = 0;
-  while (loopAnim === 'idle') {
-    if (!pauseLoopAnim) {
-      renderer.material.SetTextureOffset ("_MainTex", idleOffsets[i]);
-      i = (i + 1) % idleOffsets.length;
+private function Anim() {
+  while (true) {
+    if (nonLoopAnimOffsets) {
+      renderer.material.SetTextureOffset("_MainTex", nonLoopAnimOffsets[nonLoopAnimIndex]);
+      ++nonLoopAnimIndex;
+      if (nonLoopAnimIndex >= nonLoopAnimOffsets.length) {
+        nonLoopAnimOffsets = null;
+        nonLoopAnimIndex = 0;
+      }
+    }
+    else {
+      Debug.Log(loopAnimOffsets[loopAnimIndex]);
+      renderer.material.SetTextureOffset("_MainTex", loopAnimOffsets[loopAnimIndex]);
+      loopAnimIndex = (loopAnimIndex + 1) % loopAnimOffsets.length;
     }
     yield new WaitForSeconds (.08);
   };
-}
-
-private function WalkAnim() {
-  StopCoroutine(loopAnim);
-  loopAnim = 'walk';
-  var i = 0;
-  while (loopAnim === 'walk') {
-    if (!pauseLoopAnim) {
-      renderer.material.SetTextureOffset ("_MainTex", walkOffsets[i]);
-      i = (i + 1) % walkOffsets.length;
-    }
-    yield new WaitForSeconds (.08);
-  };
-}
-
-private function AttackAnim() {
-  pauseLoopAnim = true;
-  var i = 0;
-  while (i < attackOffsets.length) {
-    renderer.material.SetTextureOffset ("_MainTex", attackOffsets[i]);
-    i = i + 1;
-    yield new WaitForSeconds (.08);
-  };
-  pauseLoopAnim = false;
 }
