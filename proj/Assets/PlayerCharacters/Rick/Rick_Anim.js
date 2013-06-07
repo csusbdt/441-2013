@@ -60,7 +60,6 @@ private function Anim() {
       }
     }
     else {
-      Debug.Log(loopAnimOffsets[loopAnimIndex]);
       renderer.material.SetTextureOffset("_MainTex", loopAnimOffsets[loopAnimIndex]);
       loopAnimIndex = (loopAnimIndex + 1) % loopAnimOffsets.length;
     }

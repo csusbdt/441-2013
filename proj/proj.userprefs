@@ -1,9 +1,9 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/PlayerCharacters/Rick/Rick_Anim.js">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/PlayerCharacters/Rick/Rick_Controller.js">
     <Files>
-      <File FileName="Assets/PlayerCharacters/Rick/Rick_Anim.js" Line="25" Column="1" />
-      <File FileName="Assets/PlayerCharacters/Rick/Rick_Controller.js" Line="21" Column="38" />
+      <File FileName="Assets/PlayerCharacters/Rick/Rick_Anim.js" Line="63" Column="1" />
+      <File FileName="Assets/PlayerCharacters/Rick/Rick_Controller.js" Line="35" Column="5" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
