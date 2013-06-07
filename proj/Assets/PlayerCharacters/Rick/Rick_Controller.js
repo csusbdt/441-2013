@@ -1,37 +1,33 @@
 #pragma strict
 
-private var speed : float = 1.8;
-private var controller : CharacterController = null;
-private var anim : Rick_Anim = null;
-private var forwardVelocity: Vector2 = new Vector2(speed, 0);
-private var jumpSpeed : float = 8.0;
-private var jumpVelocity: Vector2 = new Vector2(0, jumpSpeed);
-private var currentJumpVelocity: Vector2 = Vector2.zero;
+// This controller derived from the example in the unity docs; see the following.
+// http://docs.unity3d.com/Documentation/ScriptReference/CharacterController.Move.html
 
-function Start () {
-  controller = collider as CharacterController;
-  anim = GetComponent(Rick_Anim);
-}
+var speed : float = 6.0;
+var jumpSpeed : float = 8.0;
+var gravity : float = 20.0;
 
-function Update () {
-  if (Input.GetAxis("Horizontal") > 0.001) {
-    anim.walk();
-    transform.localScale = Vector3(1, 1, 1);
-    controller.SimpleMove(-forwardVelocity);
-  } else if (Input.GetAxis("Horizontal") < -0.001) {
-    anim.walk();
-    transform.localScale = Vector3(-1, 1, 1);
-    controller.SimpleMove(forwardVelocity);
-  } else {
-    anim.idle();
-    controller.SimpleMove(Vector2.zero);
+private var moveDirection : Vector3 = Vector3.zero;
+
+function Update() {
+  var controller : CharacterController = GetComponent(CharacterController);
+  var anim : Rick_Anim = GetComponent(Rick_Anim);
+  if (controller.isGrounded) {
+    if (Input.GetAxis("Horizontal") > .001) {
+      transform.rotation = Quaternion.identity;
+    } else if (Input.GetAxis("Horizontal") < -.001) {
+      transform.rotation = Quaternion.Euler(180, 0, 0);
+    }
+    moveDirection = Vector3(-Input.GetAxis("Horizontal"), 0, 0);
+    moveDirection = transform.TransformDirection(moveDirection);
+    moveDirection *= speed;
+    if (Input.GetButton("Jump")) {
+      moveDirection.y = jumpSpeed;
+      anim.idle();
+    } else {
+      anim.walk();
+    }
   }
-  if (Input.GetButton("Jump")) {
-    currentJumpVelocity = jumpVelocity;
-  }
-  if (Input.GetButton ("Fire1")) {
-    anim.attack();
-  } 
-  //controller.Move(currentJumpVelocity);
-  //currentJumpVelocity = 0.5 * currentJumpVelocity;
+  moveDirection.y -= gravity * Time.deltaTime;
+  controller.Move(moveDirection * Time.deltaTime);
 }
