@@ -4,8 +4,8 @@
 // http://docs.unity3d.com/Documentation/ScriptReference/CharacterController.Move.html
 
 private var speed : float = 3;
-private var jumpSpeed : float = 8.0;
-private var gravity : float = 20.0;
+private var jumpSpeed : float = 3.0;
+private var gravity : float = 10.0;
 
 private var attackCooldown : float = .4;
 private var attackCooldownRemaining : float = 0;
