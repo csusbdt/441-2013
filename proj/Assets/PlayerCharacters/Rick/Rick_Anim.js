@@ -60,7 +60,10 @@ function walk() {
 }
 
 function attack() {
-  if (nonLoopAnimOffsets === null) nonLoopAnimOffsets = attackOffsets;
+  if (nonLoopAnimOffsets === null) {
+    nonLoopAnimOffsets = attackOffsets;
+    nonLoopAnimIndex = 0;
+  }
 }
 
 private function Anim() {
@@ -72,8 +75,7 @@ private function Anim() {
         nonLoopAnimOffsets = null;
         nonLoopAnimIndex = 0;
       }
-    }
-    else {
+    } else {
       renderer.material.SetTextureOffset("_MainTex", loopAnimOffsets[loopAnimIndex]);
       loopAnimIndex = (loopAnimIndex + 1) % loopAnimOffsets.length;
     }

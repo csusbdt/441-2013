@@ -3,9 +3,12 @@
 // This controller derived from the example in the unity docs; see the following.
 // http://docs.unity3d.com/Documentation/ScriptReference/CharacterController.Move.html
 
-var speed : float = 6;
-var jumpSpeed : float = 8.0;
-var gravity : float = 20.0;
+private var speed : float = 3;
+private var jumpSpeed : float = 8.0;
+private var gravity : float = 20.0;
+
+private var attackCooldown : float = .4;
+private var attackCooldownRemaining : float = 0;
 
 private var moveDirection : Vector3 = Vector3.zero;
 
@@ -36,11 +39,14 @@ function Update() {
     if (Input.GetButton("Jump")) {
       moveDirection.y = jumpSpeed;
       anim.idle();
-    } else {
-      anim.walk();
     }
   } else {
     moveDirection.y -= gravity * Time.deltaTime;
+  }
+  if (attackCooldownRemaining > 0) attackCooldownRemaining -= Time.deltaTime;
+  if (attackCooldownRemaining <= 0 && Input.GetButton("Fire1")) {
+    attackCooldownRemaining = attackCooldown;
+    anim.attack();
   }
   controller.Move(moveDirection * Time.deltaTime);
 }
