@@ -27,8 +27,22 @@ private var loopAnimIndex = 0;
 private var nonLoopAnimOffsets : Vector2[] = null;  // attackOffsets
 private var nonLoopAnimIndex = 0;
 
-function Awake() { 
+private var faceRightScale : Vector3;
+private var faceLeftScale : Vector3;
+
+function Awake() {
+  faceRightScale = transform.localScale;
+  faceLeftScale = Vector3(-1 * transform.localScale.x, transform.localScale.y, transform.localScale.z);
   StartCoroutine(Anim());
+}
+
+function Update() {
+  // Mirror the texture based on facing direction.
+  if (transform.forward.x > 0) {
+    transform.localScale = faceRightScale;
+  } else {
+    transform.localScale = faceLeftScale;
+  }
 }
 
 function idle() {
