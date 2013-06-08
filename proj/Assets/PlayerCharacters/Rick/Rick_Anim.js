@@ -1,30 +1,36 @@
 #pragma strict
 
-private var idleOffsets = [ 
-  new Vector2(0, .6666666)
+// Each frame is a Vector3 containing (xOffset, yOffset, duration)
+
+private var idleFrames = [
+  Vector3(0, .6666666, .08)
 ];
 
-private var walkOffsets = [ 
-  new Vector2(.000, .3333333),
-  new Vector2(.125, .3333333),
-  new Vector2(.250, .3333333),
-  new Vector2(.375, .3333333),
-  new Vector2(.500, .3333333),
-  new Vector2(.625, .3333333),
-  new Vector2(.750, .3333333),
-  new Vector2(.875, .3333333)
+private var walkFrameDuration : float = .10;
+
+private var walkFrames = [ 
+  Vector3(.000, .3333333, walkFrameDuration),
+  Vector3(.125, .3333333, walkFrameDuration),
+  Vector3(.250, .3333333, walkFrameDuration),
+  Vector3(.375, .3333333, walkFrameDuration),
+  Vector3(.500, .3333333, walkFrameDuration),
+  Vector3(.625, .3333333, walkFrameDuration),
+  Vector3(.750, .3333333, walkFrameDuration),
+  Vector3(.875, .3333333, walkFrameDuration)
 ];
+
+private var attackFrameDuration : float = .11;
   
-private var attackOffsets = [ 
-  Vector2(0, 0), 
-  Vector2(.125, 0), 
-  Vector2(.250, 0) 
+private var attackFrames = [ 
+  Vector3(   0, 0, attackFrameDuration), 
+  Vector3(.125, 0, attackFrameDuration), 
+  Vector3(.250, 0, attackFrameDuration) 
 ];
 
-private var loopAnimOffsets : Vector2[] = idleOffsets;  // idleOffsets or walkOffsets
+private var loopAnimFrames : Vector3[] = idleFrames;  // idleOffsets or walkOffsets
 private var loopAnimIndex = 0;
 
-private var nonLoopAnimOffsets : Vector2[] = null;  // attackOffsets
+private var nonLoopAnimFrames : Vector3[] = null;  // attackOffsets
 private var nonLoopAnimIndex = 0;
 
 private var faceRightScale : Vector3;
@@ -46,39 +52,42 @@ function Update() {
 }
 
 function idle() {
-  if (loopAnimOffsets !== idleOffsets) {
-    loopAnimOffsets = idleOffsets;
+  if (loopAnimFrames !== idleFrames) {
+    loopAnimFrames = idleFrames;
     loopAnimIndex = 0;
   }
 }
 
 function walk() {
-  if (loopAnimOffsets !== walkOffsets) {
-    loopAnimOffsets = walkOffsets;
+  if (loopAnimFrames !== walkFrames) {
+    loopAnimFrames = walkFrames;
     loopAnimIndex = 0;
   }
 }
 
 function attack() {
-  if (nonLoopAnimOffsets === null) {
-    nonLoopAnimOffsets = attackOffsets;
+  if (nonLoopAnimFrames === null) {
+    nonLoopAnimFrames = attackFrames;
     nonLoopAnimIndex = 0;
   }
 }
 
 private function Anim() {
+  var frameDuration : float = 0;
   while (true) {
-    if (nonLoopAnimOffsets) {
-      renderer.material.SetTextureOffset("_MainTex", nonLoopAnimOffsets[nonLoopAnimIndex]);
+    if (nonLoopAnimFrames) {
+      renderer.material.SetTextureOffset("_MainTex", nonLoopAnimFrames[nonLoopAnimIndex]);
+      frameDuration = nonLoopAnimFrames[nonLoopAnimIndex].z;
       ++nonLoopAnimIndex;
-      if (nonLoopAnimIndex >= nonLoopAnimOffsets.length) {
-        nonLoopAnimOffsets = null;
+      if (nonLoopAnimIndex >= nonLoopAnimFrames.length) {
+        nonLoopAnimFrames = null;
         nonLoopAnimIndex = 0;
       }
     } else {
-      renderer.material.SetTextureOffset("_MainTex", loopAnimOffsets[loopAnimIndex]);
-      loopAnimIndex = (loopAnimIndex + 1) % loopAnimOffsets.length;
+      renderer.material.SetTextureOffset("_MainTex", loopAnimFrames[loopAnimIndex]);
+      frameDuration = loopAnimFrames[loopAnimIndex].z;
+      loopAnimIndex = (loopAnimIndex + 1) % loopAnimFrames.length;
     }
-    yield new WaitForSeconds (.08);
+    yield new WaitForSeconds (frameDuration);
   };
 }
