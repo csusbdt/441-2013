@@ -10,7 +10,7 @@ private var gravity : float = 10.0;
 private var attackCooldown : float = .4;
 private var attackCooldownRemaining : float = 0;
 
-private var moveDirection : Vector3 = Vector3.zero;
+private var velocity : Vector3 = Vector3.zero;
 
 function Start() {
   transform.up = Vector3(0, 1, 0);
@@ -33,19 +33,21 @@ function Update() {
     } else {
       anim.idle();
     }
-    moveDirection = Vector3(Input.GetAxis("Horizontal"), 0, 0);
-    moveDirection *= speed;
-    if (Input.GetButton("Jump")) {
-      moveDirection.y = jumpSpeed;
+    velocity = Vector3(Input.GetAxis("Horizontal"), 0, 0);
+    velocity *= speed;
+    if (Input.GetButtonDown("Jump")) {
+      velocity.y = jumpSpeed;
       anim.idle();
     }
   } else {
-    moveDirection.y -= gravity * Time.deltaTime;
+    velocity.y -= gravity * Time.deltaTime;
   }
   if (attackCooldownRemaining > 0) attackCooldownRemaining -= Time.deltaTime;
   if (attackCooldownRemaining <= 0 && Input.GetButton("Fire1")) {
     attackCooldownRemaining = attackCooldown;
     anim.attack();
   }
-  controller.Move(moveDirection * Time.deltaTime);
+  // Add a little downward movement to correct for character controller flaw.
+  velocity.y -= 0.0001;
+  controller.Move(velocity * Time.deltaTime);
 }
